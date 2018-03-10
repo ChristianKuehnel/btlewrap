@@ -2,6 +2,13 @@
 """Python package description."""
 from setuptools import setup, find_packages
 
+
+def readme():
+    """Load the readme file."""
+    with open('README.rst') as readme_file:
+        return readme_file.read()
+
+
 setup(
     name='btle',
     version='0.0.1',
@@ -9,6 +16,7 @@ setup(
     url='https://github.com/ChristianKuehnel/btlewrap',
     author='Christian Kuehnel',
     author_email='christian.kuehnel@gmail.com',
+    long_description=readme(),
     license='MIT',
     classifiers=[
         'Development Status :: 3 - Alpha',
