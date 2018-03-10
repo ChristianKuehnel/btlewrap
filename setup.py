@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Python package description."""
 from setuptools import setup, find_packages
 
@@ -6,7 +7,7 @@ setup(
     version='0.0.1',
     description='wrapper around different bluetooth low energy backends',
     url='https://github.com/ChristianKuehnel/btlewrap',
-    author='Christian Kühnel',
+    author='Christian Kuehnel',
     author_email='christian.kuehnel@gmail.com',
     license='MIT',
     classifiers=[
