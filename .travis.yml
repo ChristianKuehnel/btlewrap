@@ -15,7 +15,7 @@ matrix:
     env: TOXENV=flake8
   - python: '3.6'
     env: TOXENV=pylint
-install: pip install -U tox coveralls
 
-script: travis_wait tox
+install: pip install -U tox coveralls
+script: tox
 after_success: coveralls
