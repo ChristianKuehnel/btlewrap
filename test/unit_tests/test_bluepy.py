@@ -44,3 +44,11 @@ class TestBluepy(unittest.TestCase):
         backend = BluepyBackend()
         with self.assertRaises(BluetoothBackendException):
             backend.connect(TEST_MAC)
+
+    @mock.patch('bluepy.btle.Peripheral')
+    def test_wait_for_notification(self, mock_peripheral):
+        """Test writing to a handle successfully."""
+        backend = BluepyBackend()
+        backend.connect(TEST_MAC)
+        self.assertTrue(backend.wait_for_notification(0xFF, None, 10))
+        mock_peripheral.assert_called_with(TEST_MAC, iface=0)

@@ -32,3 +32,7 @@ class MockBackend(AbstractBackend):
         """Writing handles just stores the results in a list."""
         self.written_handles.append((handle, value))
         return handle in self.expected_write_handles
+
+    def wait_for_notification(self, handle, delegate, timeout):
+        """same as write_handle. Delegate is not used, yet."""
+        return self.write_handle(handle, self._DATA_MODE_LISTEN)
