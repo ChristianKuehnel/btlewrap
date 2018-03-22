@@ -1,4 +1,4 @@
-"""Bluetooth Backends available for miflora."""
+"""Bluetooth Backends available for miflora and other btle sensors."""
 from threading import Lock
 
 
@@ -67,7 +67,7 @@ class BluetoothBackendException(Exception):
 class AbstractBackend(object):
     """Abstract base class for talking to Bluetooth LE devices.
 
-    This class will be overridden by the different backends used by miflora.
+    This class will be overridden by the different backends used by miflora and other btle sensors.
     """
 
     _DATA_MODE_LISTEN = bytes([0x01, 0x00])
@@ -93,9 +93,13 @@ class AbstractBackend(object):
         You must be connected to a device first."""
         raise NotImplementedError
 
-    def wait_for_notification(self, handle, delegate, timeout):
+    def wait_for_notification(self, handle, delegate, notification_timeout):
         """ registers as a listener and calls the delegate's handleNotification
             for each notification received
+            @param handle - the handle to use to register for notifications
+            @param: delegate - the delegate object's handleNotification is called for every notification received
+            @param: notification_timeout - wait this amount of seconds for notifications
+
         """
         raise NotImplementedError
 

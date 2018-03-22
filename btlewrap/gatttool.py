@@ -55,13 +55,15 @@ class GatttoolBackend(AbstractBackend):
         return self._mac is not None
 
     @wrap_exception
-    def write_handle(self, handle, value, listen=False):
+    def write_handle(self, handle, value):
+        # noqa: C901
+        # pylint: disable=arguments-differ
+
         """Read from a BLE address.
 
         @param: mac - MAC address in format XX:XX:XX:XX:XX:XX
         @param: handle - BLE characteristics handle in format 0xXX
         @param: value - value to write to the given handle
-        @param: timeout - timeout in seconds
         """
 
         if not self.is_connected():
@@ -74,9 +76,7 @@ class GatttoolBackend(AbstractBackend):
         while attempt <= self.retries:
             cmd = "gatttool --device={} --char-write-req -a {} -n {} --adapter={}".format(
                 self._mac, self.byte_to_handle(handle), self.bytes_to_string(value), self.adapter)
-            if listen:
-                cmd = "gatttool --device={} --char-write-req -a {} -n {} --adapter={} --listen".format(
-                    self._mac, self.byte_to_handle(handle), self.bytes_to_string(value), self.adapter)
+
             _LOGGER.debug("Running gatttool with a timeout of %d: %s",
                           self.timeout, cmd)
 
@@ -96,7 +96,7 @@ class GatttoolBackend(AbstractBackend):
 
             result = result.decode("utf-8").strip(' \n\t')
             if "Write Request failed" in result:
-                raise BluetoothBackendException('Error writing handls to sensor: {}'.format(result))
+                raise BluetoothBackendException('Error writing handle to sensor: {}'.format(result))
             _LOGGER.debug("Got %s from gatttool", result)
             # Parse the output
             if "successfully" in result:
@@ -113,16 +113,87 @@ class GatttoolBackend(AbstractBackend):
         raise BluetoothBackendException("Exit write_ble, no data ({})".format(current_thread()))
 
     @wrap_exception
-    def wait_for_notification(self, handle, delegate, timeout):
+    def wait_for_notification(self, handle, delegate, notification_timeout):
         """Listen for characteristics changes from a BLE address.
 
         @param: mac - MAC address in format XX:XX:XX:XX:XX:XX
         @param: handle - BLE characteristics handle in format 0xXX
                          a value of 0x0100 is written to register for listening
-        @param: delegate - unused
-        @param: timeout - ignored. the self.timeout is used
+        @param: delegate - gatttool receives the
+            --listen argument and the delegate object's handleNotification is
+            called for every returned row
+        @param: notification_timeout
         """
-        return self.write_handle(handle, self._DATA_MODE_LISTEN, True)
+
+        if not self.is_connected():
+            raise BluetoothBackendException('Not connected to any device.')
+
+        attempt = 0
+        delay = 10
+        _LOGGER.debug("Enter write_ble (%s)", current_thread())
+
+        while attempt <= self.retries:
+            cmd = "gatttool --device={} --char-write-req -a {} -n {} --adapter={} --listen".format(
+                self._mac, self.byte_to_handle(handle), self.bytes_to_string(self._DATA_MODE_LISTEN), self.adapter)
+            _LOGGER.debug("Running gatttool with a timeout of %d: %s", notification_timeout, cmd)
+
+            with Popen(cmd,
+                       shell=True,
+                       stdout=PIPE,
+                       stderr=PIPE,
+                       preexec_fn=os.setsid) as process:
+                try:
+                    result = process.communicate(timeout=notification_timeout)[0]
+                    _LOGGER.debug("Finished gatttool")
+                except TimeoutExpired:
+                    # send signal to the process group, because listening always hangs
+                    os.killpg(process.pid, signal.SIGINT)
+                    result = process.communicate()[0]
+                    _LOGGER.debug("Listening stopped forcefully after timeout.")
+
+            result = result.decode("utf-8").strip(' \n\t')
+            if "Write Request failed" in result:
+                raise BluetoothBackendException('Error writing handle to sensor: {}'.format(result))
+            _LOGGER.debug("Got %s from gatttool", result)
+            # Parse the output to determine success
+            if "successfully" in result:
+                _LOGGER.debug("Exit write_ble with result (%s)", current_thread())
+                # extract useful data.
+                for element in self.extract_notification_payload(result):
+                    delegate.handleNotification(handle, bytes([int(x, 16) for x in element.split()]))
+                return True
+
+            attempt += 1
+            _LOGGER.debug("Waiting for %s seconds before retrying", delay)
+            if attempt < self.retries:
+                time.sleep(delay)
+                delay *= 2
+
+        raise BluetoothBackendException("Exit write_ble, no data ({})".format(current_thread()))
+
+    @staticmethod
+    def extract_notification_payload(process_output):
+        """
+        Processes the raw output from Gatttool stripping the first line and the
+            'Notification handle = 0x000e value: ' from each line
+        @param: process_output - the raw output from a listen commad of GattTool
+        which may look like this:
+            Characteristic value was written successfully
+            Notification handle = 0x000e value: 54 3d 32 37 2e 33 20 48 3d 32 37 2e 30 00
+            Notification handle = 0x000e value: 54 3d 32 37 2e 32 20 48 3d 32 37 2e 32 00
+            Notification handle = 0x000e value: 54 3d 32 37 2e 33 20 48 3d 32 37 2e 31 00
+            Notification handle = 0x000e value: 54 3d 32 37 2e 32 20 48 3d 32 37 2e 33 00
+            Notification handle = 0x000e value: 54 3d 32 37 2e 33 20 48 3d 32 37 2e 31 00
+            Notification handle = 0x000e value: 54 3d 32 37 2e 31 20 48 3d 32 37 2e 34 00
+
+
+            This method strips the fist line and strips the 'Notification handle = 0x000e value: ' from each line
+        @returns a processed string only containing the values.
+        """
+        data = []
+        for element in process_output.splitlines()[1:]:
+            data.append(element.split(": ")[1])
+        return data
 
     @wrap_exception
     def read_handle(self, handle):

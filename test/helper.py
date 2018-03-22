@@ -33,6 +33,7 @@ class MockBackend(AbstractBackend):
         self.written_handles.append((handle, value))
         return handle in self.expected_write_handles
 
-    def wait_for_notification(self, handle, delegate, timeout):
+    def wait_for_notification(self, handle, delegate, notification_timeout):
         """same as write_handle. Delegate is not used, yet."""
+        delegate.handleNotification(bytes([int(x, 16) for x in "54 3d 32 37 2e 33 20 48 3d 32 37 2e 30 00".split()]))
         return self.write_handle(handle, self._DATA_MODE_LISTEN)
