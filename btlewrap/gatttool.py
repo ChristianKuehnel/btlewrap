@@ -192,7 +192,9 @@ class GatttoolBackend(AbstractBackend):
         """
         data = []
         for element in process_output.splitlines()[1:]:
-            data.append(element.split(": ")[1])
+            parts = element.split(": ")
+            if len(parts) == 2:
+                data.append(parts[1])
         return data
 
     @wrap_exception
