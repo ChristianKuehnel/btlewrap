@@ -64,6 +64,17 @@ class TestGatttool(unittest.TestCase):
         with self.assertRaises(BluetoothBackendException):
             backend.read_handle(0xFF)
 
+    @mock.patch('os.killpg')
+    @mock.patch('btlewrap.gatttool.Popen')
+    @mock.patch('time.sleep', return_value=None)
+    def test_read_handle_timeout(self, time_mock, popen_mock, os_mock):
+        """Test notification when timeout"""
+        _configure_popenmock_timeout(popen_mock, "Characteristic")
+        backend = GatttoolBackend()
+        backend.connect(TEST_MAC)
+        with self.assertRaises(BluetoothBackendException):
+            backend.read_handle(0xFF)
+
     def test_write_not_connected(self):
         """Test writing data when not connected."""
         backend = GatttoolBackend()
@@ -94,6 +105,17 @@ class TestGatttool(unittest.TestCase):
     def test_write_handle_no_answer(self, time_mock, popen_mock):
         """Test writing to a handle when no result is returned."""
         _configure_popenmock(popen_mock, '')
+        backend = GatttoolBackend()
+        backend.connect(TEST_MAC)
+        with self.assertRaises(BluetoothBackendException):
+            backend.write_handle(0xFF, b'\x00\x10\xFF')
+
+    @mock.patch('os.killpg')
+    @mock.patch('btlewrap.gatttool.Popen')
+    @mock.patch('time.sleep', return_value=None)
+    def test_write_handle_timeout(self, time_mock, popen_mock, os_mock):
+        """Test notification when timeout"""
+        _configure_popenmock_timeout(popen_mock, "Characteristic")
         backend = GatttoolBackend()
         backend.connect(TEST_MAC)
         with self.assertRaises(BluetoothBackendException):
