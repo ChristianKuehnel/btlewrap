@@ -1,10 +1,9 @@
 btlewrap
 ====
 
-Bluetooth LowEnergy wrapper for different python backends.
+Bluetooth LowEnergy wrapper for different python backends. This gives you a nice API so that you can use different Bluetooth implementations on different platforms.
 
-This library was extracted from `miflora <https://github.com/open-homeautomation/miflora>`_
-so that it can be used on other projects as well.
+This library was initially implemented as part of the `miflora <https://github.com/open-homeautomation/miflora>`_ library, but then refactored out, so that it can be used on other projects as well.
 
 contribution
 ============
