@@ -52,7 +52,13 @@ install the bluepy library on your machine. In most cases this can be done via:
 
     pip3 install pygatt
 
+Usage
+=====
+See the depending projects below on how to use the library.
+
 Depending projects
 ==================
+These projects are using btlewrap:
 
 * `miflora <https://github.com/open-homeautomation/miflora>`_
+* `mitemp <https://github.com/flavio20002/mitemp_bt>`_
