@@ -59,7 +59,7 @@ class BluepyBackend(AbstractBackend):
         """Disconnect from a device if connected."""
         if self._peripheral is None:
             return
-        
+
         self._peripheral.disconnect()
         self._peripheral = None
 
