@@ -56,7 +56,10 @@ class BluepyBackend(AbstractBackend):
 
     @wrap_exception
     def disconnect(self):
-        """Disconnect from a device."""
+        """Disconnect from a device if connected."""
+        if self._peripheral is None:
+            return
+        
         self._peripheral.disconnect()
         self._peripheral = None
 
