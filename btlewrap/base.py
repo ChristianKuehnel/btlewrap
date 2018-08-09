@@ -48,8 +48,15 @@ class _BackendConnection(object):  # pylint: disable=too-few-public-methods
         return self._backend
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self._backend.disconnect()
-        self._lock.release()
+        self._cleanup()
+        
+    def __del__(self):
+        self._cleanup()
+    
+    def _cleanup(self):
+        if _BackendConnection.is_connected():
+            self._backend.disconnect()
+            self._lock.release()
 
     @staticmethod
     def is_connected():
