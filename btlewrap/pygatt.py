@@ -30,7 +30,7 @@ class PygattBackend(AbstractBackend):
     """Bluetooth backend for Blue Giga based bluetooth devices."""
 
     @wrap_exception
-    def __init__(self, adapter=None):
+    def __init__(self, adapter=None, address_type='public'):
         """Create a new instance.
 
         Note: the parameter "adapter" is ignored, pygatt detects the right USB port automagically.
@@ -42,6 +42,7 @@ class PygattBackend(AbstractBackend):
         self._adapter = pygatt.BGAPIBackend()
         self._adapter.start()
         self._device = None
+        self._address_type = address_type
 
     def __del__(self):
         if self._adapter is not None:
@@ -50,7 +51,10 @@ class PygattBackend(AbstractBackend):
     @wrap_exception
     def connect(self, mac):
         """Connect to a device."""
-        self._device = self._adapter.connect(mac)
+        address_type = pygatt.BLEAddressType.public
+        if self._address_type == 'random':
+            address_type = pygatt.BLEAddressType.random
+        self._device = self._adapter.connect(mac, address_type=address_type)
 
     def is_connected(self):
         """Check if connected to a device."""
