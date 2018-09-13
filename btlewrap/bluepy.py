@@ -37,9 +37,10 @@ def wrap_exception(func):
 class BluepyBackend(AbstractBackend):
     """Backend for Miflora using the bluepy library."""
 
-    def __init__(self, adapter='hci0'):
+    def __init__(self, adapter='hci0', address_type='public'):
         """Create new instance of the backend."""
         super(BluepyBackend, self).__init__(adapter)
+        self.address_type = address_type
         self._peripheral = None
 
     @wrap_exception
@@ -52,7 +53,7 @@ class BluepyBackend(AbstractBackend):
                 'Invalid pattern "{}" for BLuetooth adpater. '
                 'Expetected something like "hci0".'.format(self.adapter))
         iface = int(match_result.group(1))
-        self._peripheral = Peripheral(mac, iface=iface)
+        self._peripheral = Peripheral(mac, iface=iface, addrType=self.address_type)
 
     @wrap_exception
     def disconnect(self):
