@@ -42,7 +42,8 @@ class _BackendConnection(object):  # pylint: disable=too-few-public-methods
         self._lock.acquire()
         try:
             self._backend.connect(self._mac)
-        except BluetoothBackendException:
+        # release lock on any exceptions otherwise it will never be unlocked
+        except:  # noqa: E722
             self._lock.release()
             raise
         return self._backend
