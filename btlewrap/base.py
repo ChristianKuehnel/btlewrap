@@ -43,7 +43,7 @@ class _BackendConnection(object):  # pylint: disable=too-few-public-methods
         try:
             self._backend.connect(self._mac)
         # release lock on any exceptions otherwise it will never be unlocked
-        except:  # noqa: E722 
+        except:  # noqa: E722
             self._lock.release()
             raise
         return self._backend
