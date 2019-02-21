@@ -2,6 +2,7 @@
 import re
 import logging
 import time
+from typing import List, Tuple, Callable
 from btlewrap.base import AbstractBackend, BluetoothBackendException
 
 _LOGGER = logging.getLogger(__name__)
@@ -9,7 +10,7 @@ RETRY_LIMIT = 3
 RETRY_DELAY = 0.1
 
 
-def wrap_exception(func):
+def wrap_exception(func: Callable) -> Callable:
     """Decorator to wrap BTLEExceptions into BluetoothBackendException."""
     try:
         # only do the wrapping if bluepy is installed.
@@ -37,14 +38,14 @@ def wrap_exception(func):
 class BluepyBackend(AbstractBackend):
     """Backend for Miflora using the bluepy library."""
 
-    def __init__(self, adapter='hci0', address_type='public'):
+    def __init__(self, adapter: str = 'hci0', address_type: str = 'public'):
         """Create new instance of the backend."""
         super(BluepyBackend, self).__init__(adapter)
         self.address_type = address_type
         self._peripheral = None
 
     @wrap_exception
-    def connect(self, mac):
+    def connect(self, mac: str):
         """Connect to a device."""
         from bluepy.btle import Peripheral
         match_result = re.search(r'hci([\d]+)', self.adapter)
@@ -65,7 +66,7 @@ class BluepyBackend(AbstractBackend):
         self._peripheral = None
 
     @wrap_exception
-    def read_handle(self, handle):
+    def read_handle(self, handle: int) -> bytes:
         """Read a handle from the device.
 
         You must be connected to do this.
@@ -75,7 +76,7 @@ class BluepyBackend(AbstractBackend):
         return self._peripheral.readCharacteristic(handle)
 
     @wrap_exception
-    def write_handle(self, handle, value):
+    def write_handle(self, handle: int, value: bytes):
         """Write a handle from the device.
 
         You must be connected to do this.
@@ -85,7 +86,7 @@ class BluepyBackend(AbstractBackend):
         return self._peripheral.writeCharacteristic(handle, value, True)
 
     @wrap_exception
-    def wait_for_notification(self, handle, delegate, notification_timeout):
+    def wait_for_notification(self, handle: int, delegate, notification_timeout: float):
         if self._peripheral is None:
             raise BluetoothBackendException('not connected to backend')
         self.write_handle(handle, self._DATA_MODE_LISTEN)
@@ -93,7 +94,7 @@ class BluepyBackend(AbstractBackend):
         return self._peripheral.waitForNotifications(notification_timeout)
 
     @staticmethod
-    def check_backend():
+    def check_backend() -> bool:
         """Check if the backend is available."""
         try:
             import bluepy.btle  # noqa: F401 #pylint: disable=unused-variable
@@ -104,7 +105,7 @@ class BluepyBackend(AbstractBackend):
 
     @staticmethod
     @wrap_exception
-    def scan_for_devices(timeout):
+    def scan_for_devices(timeout: float) -> List[Tuple[str, str]]:
         """Scan for bluetooth low energy devices.
 
         Note this must be run as root!"""

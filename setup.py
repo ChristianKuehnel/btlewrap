@@ -30,5 +30,6 @@ setup(
     packages=find_packages(),
     keywords='bluetooth low-energy ble',
     zip_safe=False,
-    extras_require={'testing': ['pytest']}
+    extras_require={'testing': ['pytest']},
+    install_requires=['typing>=3,<4'],
 )
