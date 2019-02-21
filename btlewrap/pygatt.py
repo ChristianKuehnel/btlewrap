@@ -51,6 +51,8 @@ class PygattBackend(AbstractBackend):
     @wrap_exception
     def connect(self, mac):
         """Connect to a device."""
+        import pygatt
+
         address_type = pygatt.BLEAddressType.public
         if self._address_type == 'random':
             address_type = pygatt.BLEAddressType.random
