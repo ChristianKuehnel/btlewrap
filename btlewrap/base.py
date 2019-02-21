@@ -3,14 +3,14 @@ from threading import Lock
 from typing import List, Tuple
 
 
-class BluetoothInterface(object):
+class BluetoothInterface:
     """Wrapper around the bluetooth adapters.
 
     This class takes care of locking and the context managers.
     """
 
     def __init__(self, backend: "AbstractBackend", adapter: str = 'hci0', address_type: str = 'public', **kwargs):
-        self._backend = backend(adapter, address_type='public', **kwargs)
+        self._backend = backend(adapter, address_type=address_type, **kwargs)
         self._backend.check_backend()
 
     def __del__(self):
@@ -27,7 +27,7 @@ class BluetoothInterface(object):
         return _BackendConnection.is_connected()
 
 
-class _BackendConnection(object):  # pylint: disable=too-few-public-methods
+class _BackendConnection:  # pylint: disable=too-few-public-methods
     """Context Manager for a bluetooth connection.
 
     This creates the context for the connection and manages locking.
@@ -70,10 +70,9 @@ class BluetoothBackendException(Exception):
     """Exception thrown by the different backends.
 
     This is a wrapper for other exception specific to each library."""
-    pass
 
 
-class AbstractBackend(object):
+class AbstractBackend:
     """Abstract base class for talking to Bluetooth LE devices.
 
     This class will be overridden by the different backends used by miflora and other btle sensors.
@@ -88,13 +87,11 @@ class AbstractBackend(object):
         """connect to a device with the given @mac.
 
         only required by some backends"""
-        pass
 
     def disconnect(self):
         """disconnect from a device.
 
         Only required by some backends"""
-        pass
 
     def write_handle(self, handle: int, value: bytes):
         """Write a value to a handle.

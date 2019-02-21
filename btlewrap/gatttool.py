@@ -30,6 +30,8 @@ def wrap_exception(func: Callable) -> Callable:
 class GatttoolBackend(AbstractBackend):
     """ Backend using gatttool."""
 
+    # pylint: disable=subprocess-popen-preexec-fn
+
     def __init__(self, adapter: str = 'hci0', retries: int = 3, timeout: float = 20, address_type: str = 'public'):
         super(GatttoolBackend, self).__init__(adapter)
         self.adapter = adapter

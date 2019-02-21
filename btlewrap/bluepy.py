@@ -97,7 +97,7 @@ class BluepyBackend(AbstractBackend):
     def check_backend() -> bool:
         """Check if the backend is available."""
         try:
-            import bluepy.btle  # noqa: F401 #pylint: disable=unused-variable
+            import bluepy.btle  # noqa: F401 #pylint: disable=unused-import
             return True
         except ImportError as importerror:
             _LOGGER.error('bluepy not found: %s', str(importerror))

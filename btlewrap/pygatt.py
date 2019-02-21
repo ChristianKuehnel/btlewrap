@@ -89,7 +89,7 @@ class PygattBackend(AbstractBackend):
     def check_backend() -> bool:
         """Check if the backend is available."""
         try:
-            import pygatt  # noqa: F401 # pylint: disable=unused-variable
+            import pygatt  # noqa: F401 # pylint: disable=unused-import
             return True
         except ImportError:
             return False

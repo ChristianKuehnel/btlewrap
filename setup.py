@@ -19,7 +19,7 @@ setup(
     long_description=readme(),
     license='MIT',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Topic :: System :: Hardware :: Hardware Drivers',
         'License :: OSI Approved :: MIT License',
