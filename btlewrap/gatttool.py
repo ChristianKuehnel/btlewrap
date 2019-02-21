@@ -29,11 +29,12 @@ def wrap_exception(func):
 class GatttoolBackend(AbstractBackend):
     """ Backend using gatttool."""
 
-    def __init__(self, adapter='hci0', retries=3, timeout=20):
+    def __init__(self, adapter='hci0', retries=3, timeout=20, address_type='public'):
         super(GatttoolBackend, self).__init__(adapter)
         self.adapter = adapter
         self.retries = retries
         self.timeout = timeout
+        self.address_type = address_type
         self._mac = None
 
     def connect(self, mac):
@@ -74,9 +75,8 @@ class GatttoolBackend(AbstractBackend):
         _LOGGER.debug("Enter write_ble (%s)", current_thread())
 
         while attempt <= self.retries:
-            cmd = "gatttool --device={} --char-write-req -a {} -n {} --adapter={}".format(
-                self._mac, self.byte_to_handle(handle), self.bytes_to_string(value), self.adapter)
-
+            cmd = "gatttool --device={} --addr-type={} --char-write-req -a {} -n {} --adapter={}".format(
+                self._mac, self.address_type, self.byte_to_handle(handle), self.bytes_to_string(value), self.adapter)
             _LOGGER.debug("Running gatttool with a timeout of %d: %s",
                           self.timeout, cmd)
 
@@ -133,8 +133,9 @@ class GatttoolBackend(AbstractBackend):
         _LOGGER.debug("Enter write_ble (%s)", current_thread())
 
         while attempt <= self.retries:
-            cmd = "gatttool --device={} --char-write-req -a {} -n {} --adapter={} --listen".format(
-                self._mac, self.byte_to_handle(handle), self.bytes_to_string(self._DATA_MODE_LISTEN), self.adapter)
+            cmd = "gatttool --device={} --addr-type={} --char-write-req -a {} -n {} --adapter={} --listen".format(
+                self._mac, self.address_type, self.byte_to_handle(handle), self.bytes_to_string(self._DATA_MODE_LISTEN),
+                self.adapter)
             _LOGGER.debug("Running gatttool with a timeout of %d: %s", notification_timeout, cmd)
 
             with Popen(cmd,
@@ -214,8 +215,8 @@ class GatttoolBackend(AbstractBackend):
         _LOGGER.debug("Enter read_ble (%s)", current_thread())
 
         while attempt <= self.retries:
-            cmd = "gatttool --device={} --char-read -a {} --adapter={}".format(
-                self._mac, self.byte_to_handle(handle), self.adapter)
+            cmd = "gatttool --device={} --addr-type={} --char-read -a {} --adapter={}".format(
+                self._mac, self.address_type, self.byte_to_handle(handle), self.adapter)
             _LOGGER.debug("Running gatttool with a timeout of %d: %s",
                           self.timeout, cmd)
             with Popen(cmd,

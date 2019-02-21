@@ -18,14 +18,14 @@ class TestBluepy(unittest.TestCase):
         """Test adapter name pattern parsing."""
         backend = BluepyBackend()
         backend.connect(TEST_MAC)
-        mock_peripheral.assert_called_with(TEST_MAC, iface=0)
+        mock_peripheral.assert_called_with(TEST_MAC, addrType='public', iface=0)
 
     @mock.patch('bluepy.btle.Peripheral')
     def test_configuration_hci12(self, mock_peripheral):
         """Test adapter name pattern parsing."""
         backend = BluepyBackend(adapter='hci12')
         backend.connect(TEST_MAC)
-        mock_peripheral.assert_called_with(TEST_MAC, iface=12)
+        mock_peripheral.assert_called_with(TEST_MAC, addrType='public', iface=12)
 
     @mock.patch('bluepy.btle.Peripheral')
     def test_configuration_invalid(self, _):
@@ -51,4 +51,4 @@ class TestBluepy(unittest.TestCase):
         backend = BluepyBackend()
         backend.connect(TEST_MAC)
         self.assertTrue(backend.wait_for_notification(0xFF, None, 10))
-        mock_peripheral.assert_called_with(TEST_MAC, iface=0)
+        mock_peripheral.assert_called_with(TEST_MAC, addrType='public', iface=0)
