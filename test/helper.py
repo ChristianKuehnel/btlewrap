@@ -11,12 +11,13 @@ class MockBackend(AbstractBackend):
     makes sensor to also test against a real sensor.
     """
 
-    def __init__(self, adapter='hci0'):
+    def __init__(self, adapter='hci0', address_type=None):
         super(MockBackend, self).__init__(adapter)
         self.written_handles = []
         self.expected_write_handles = set()
         self.override_read_handles = dict()
         self.is_available = True
+        self.address_type = address_type
 
     def check_backend(self):
         """This backend is available when the field is set accordingly."""
