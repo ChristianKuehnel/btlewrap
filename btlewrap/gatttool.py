@@ -134,7 +134,8 @@ class GatttoolBackend(AbstractBackend):
 
         while attempt <= self.retries:
             cmd = "gatttool --device={} --addr-type={} --char-write-req -a {} -n {} --adapter={} --listen".format(
-                self._mac, self.address_type, self.byte_to_handle(handle), self.bytes_to_string(self._DATA_MODE_LISTEN), self.adapter)
+                self._mac, self.address_type, self.byte_to_handle(handle), self.bytes_to_string(self._DATA_MODE_LISTEN),
+                self.adapter)
             _LOGGER.debug("Running gatttool with a timeout of %d: %s", notification_timeout, cmd)
 
             with Popen(cmd,
