@@ -125,7 +125,7 @@ class AbstractBackend(object):
         raise NotImplementedError
 
     @staticmethod
-    def scan_for_devices(timeout):
+    def scan_for_devices(timeout, adapter):
         """Scan for additional devices.
 
         Returns a list of all the mac addresses of Xiaomi Mi Flower sensor that could be found.
