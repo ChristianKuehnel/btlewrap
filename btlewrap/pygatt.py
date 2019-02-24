@@ -2,10 +2,11 @@
 
 This backend uses the pygatt API: https://github.com/peplin/pygatt
 """
+from typing import Callable
 from btlewrap.base import AbstractBackend, BluetoothBackendException
 
 
-def wrap_exception(func):
+def wrap_exception(func: Callable) -> Callable:
     """Decorator to wrap pygatt exceptions into BluetoothBackendException."""
     try:
         # only do the wrapping if pygatt is installed.
@@ -30,7 +31,7 @@ class PygattBackend(AbstractBackend):
     """Bluetooth backend for Blue Giga based bluetooth devices."""
 
     @wrap_exception
-    def __init__(self, adapter=None, address_type='public'):
+    def __init__(self, adapter: str = None, address_type='public'):
         """Create a new instance.
 
         Note: the parameter "adapter" is ignored, pygatt detects the right USB port automagically.
@@ -49,7 +50,7 @@ class PygattBackend(AbstractBackend):
             self._adapter.stop()
 
     @wrap_exception
-    def connect(self, mac):
+    def connect(self, mac: str):
         """Connect to a device."""
         import pygatt
 
@@ -58,7 +59,7 @@ class PygattBackend(AbstractBackend):
             address_type = pygatt.BLEAddressType.random
         self._device = self._adapter.connect(mac, address_type=address_type)
 
-    def is_connected(self):
+    def is_connected(self) -> bool:
         """Check if connected to a device."""
         return self._device is not None
 
@@ -70,14 +71,14 @@ class PygattBackend(AbstractBackend):
             self._device = None
 
     @wrap_exception
-    def read_handle(self, handle):
+    def read_handle(self, handle: int) -> bytes:
         """Read a handle from the device."""
         if not self.is_connected():
             raise BluetoothBackendException('Not connected to device!')
         return self._device.char_read_handle(handle)
 
     @wrap_exception
-    def write_handle(self, handle, value):
+    def write_handle(self, handle: int, value: bytes):
         """Write a handle to the device."""
         if not self.is_connected():
             raise BluetoothBackendException('Not connected to device!')
@@ -85,10 +86,10 @@ class PygattBackend(AbstractBackend):
         return True
 
     @staticmethod
-    def check_backend():
+    def check_backend() -> bool:
         """Check if the backend is available."""
         try:
-            import pygatt  # noqa: F401 # pylint: disable=unused-variable
+            import pygatt  # noqa: F401 # pylint: disable=unused-import
             return True
         except ImportError:
             return False

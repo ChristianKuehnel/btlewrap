@@ -9,13 +9,14 @@ import os
 import logging
 import re
 import time
+from typing import Callable
 from subprocess import Popen, PIPE, TimeoutExpired, signal, call
 from btlewrap.base import AbstractBackend, BluetoothBackendException
 
 _LOGGER = logging.getLogger(__name__)
 
 
-def wrap_exception(func):
+def wrap_exception(func: Callable) -> Callable:
     """Wrap all IOErrors to BluetoothBackendException"""
 
     def _func_wrapper(*args, **kwargs):
@@ -29,7 +30,9 @@ def wrap_exception(func):
 class GatttoolBackend(AbstractBackend):
     """ Backend using gatttool."""
 
-    def __init__(self, adapter='hci0', retries=3, timeout=20, address_type='public'):
+    # pylint: disable=subprocess-popen-preexec-fn
+
+    def __init__(self, adapter: str = 'hci0', retries: int = 3, timeout: float = 20, address_type: str = 'public'):
         super(GatttoolBackend, self).__init__(adapter)
         self.adapter = adapter
         self.retries = retries
@@ -37,7 +40,7 @@ class GatttoolBackend(AbstractBackend):
         self.address_type = address_type
         self._mac = None
 
-    def connect(self, mac):
+    def connect(self, mac: str):
         """Connect to sensor.
 
         Connection handling is not required when using gatttool, but we still need the mac
@@ -51,12 +54,12 @@ class GatttoolBackend(AbstractBackend):
         """
         self._mac = None
 
-    def is_connected(self):
+    def is_connected(self) -> bool:
         """Check if we are connected to the backend."""
         return self._mac is not None
 
     @wrap_exception
-    def write_handle(self, handle, value):
+    def write_handle(self, handle: int, value: bytes):
         # noqa: C901
         # pylint: disable=arguments-differ
 
@@ -113,7 +116,7 @@ class GatttoolBackend(AbstractBackend):
         raise BluetoothBackendException("Exit write_ble, no data ({})".format(current_thread()))
 
     @wrap_exception
-    def wait_for_notification(self, handle, delegate, notification_timeout):
+    def wait_for_notification(self, handle: int, delegate, notification_timeout: float):
         """Listen for characteristics changes from a BLE address.
 
         @param: mac - MAC address in format XX:XX:XX:XX:XX:XX
@@ -199,7 +202,7 @@ class GatttoolBackend(AbstractBackend):
         return data
 
     @wrap_exception
-    def read_handle(self, handle):
+    def read_handle(self, handle: int) -> bytes:
         """Read from a BLE address.
 
         @param: mac - MAC address in format XX:XX:XX:XX:XX:XX
@@ -254,7 +257,7 @@ class GatttoolBackend(AbstractBackend):
         raise BluetoothBackendException("Exit read_ble, no data ({})".format(current_thread()))
 
     @staticmethod
-    def check_backend():
+    def check_backend() -> bool:
         """Check if gatttool is available on the system."""
         try:
             call('gatttool', stdout=PIPE, stderr=PIPE)
@@ -265,12 +268,12 @@ class GatttoolBackend(AbstractBackend):
         return False
 
     @staticmethod
-    def byte_to_handle(in_byte):
+    def byte_to_handle(in_byte: int) -> str:
         """Convert a byte array to a handle string."""
         return '0x'+'{:02x}'.format(in_byte).upper()
 
     @staticmethod
-    def bytes_to_string(raw_data, prefix=False):
+    def bytes_to_string(raw_data: bytes, prefix: bool = False) -> str:
         """Convert a byte array to a hex string."""
         prefix_string = ''
         if prefix:

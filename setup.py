@@ -19,7 +19,7 @@ setup(
     long_description=readme(),
     license='MIT',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Topic :: System :: Hardware :: Hardware Drivers',
         'License :: OSI Approved :: MIT License',
@@ -30,5 +30,6 @@ setup(
     packages=find_packages(),
     keywords='bluetooth low-energy ble',
     zip_safe=False,
-    extras_require={'testing': ['pytest']}
+    extras_require={'testing': ['pytest']},
+    install_requires=['typing>=3,<4'],
 )
