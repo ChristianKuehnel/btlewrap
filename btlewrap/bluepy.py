@@ -105,13 +105,20 @@ class BluepyBackend(AbstractBackend):
 
     @staticmethod
     @wrap_exception
-    def scan_for_devices(timeout: float) -> List[Tuple[str, str]]:
+    def scan_for_devices(timeout: float, adapter='hci0') -> List[Tuple[str, str]]:
         """Scan for bluetooth low energy devices.
 
         Note this must be run as root!"""
         from bluepy.btle import Scanner
 
-        scanner = Scanner()
+        match_result = re.search(r'hci([\d]+)', adapter)
+        if match_result is None:
+            raise BluetoothBackendException(
+                'Invalid pattern "{}" for BLuetooth adpater. '
+                'Expetected something like "hci0".'.format(adapter))
+        iface = int(match_result.group(1))
+
+        scanner = Scanner(iface=iface)
         result = []
         for device in scanner.scan(timeout):
             result.append((device.addr, device.getValueText(9)))
