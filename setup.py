@@ -11,7 +11,7 @@ def readme():
 
 setup(
     name='btlewrap',
-    version='0.0.5-dev',
+    version='0.0.5',
     description='wrapper around different bluetooth low energy backends',
     url='https://github.com/ChristianKuehnel/btlewrap',
     author='Christian Kuehnel',
