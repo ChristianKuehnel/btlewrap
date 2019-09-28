@@ -25,11 +25,17 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5'
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
     packages=find_packages(),
     keywords='bluetooth low-energy ble',
     zip_safe=False,
-    extras_require={'testing': ['pytest']},
+    extras_require={
+        'testing': ['pytest'], 
+        'bluepy': ['bluepy==1.2.0'], 
+        'pygatt': ['pygatt==3.4.0'], 
+        },
     install_requires=['typing>=3,<4'],
 )
