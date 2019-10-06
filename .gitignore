@@ -103,3 +103,4 @@ ENV/
 .tox
 .pytest_cache/
 *.swp
+.test_mac
