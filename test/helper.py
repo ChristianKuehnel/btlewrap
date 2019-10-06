@@ -12,7 +12,7 @@ class MockBackend(AbstractBackend):
     """
 
     def __init__(self, adapter='hci0', address_type=None):
-        super(MockBackend, self).__init__(adapter)
+        super(MockBackend, self).__init__(adapter, address_type)
         self.written_handles = []
         self.expected_write_handles = set()
         self.override_read_handles = dict()

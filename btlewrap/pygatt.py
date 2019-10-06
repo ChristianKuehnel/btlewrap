@@ -36,14 +36,13 @@ class PygattBackend(AbstractBackend):
 
         Note: the parameter "adapter" is ignored, pygatt detects the right USB port automagically.
         """
-        super(PygattBackend, self).__init__(adapter)
+        super(PygattBackend, self).__init__(adapter, address_type)
         self.check_backend()
 
         import pygatt
         self._adapter = pygatt.BGAPIBackend()
         self._adapter.start()
         self._device = None
-        self._address_type = address_type
 
     def __del__(self):
         if self._adapter is not None:

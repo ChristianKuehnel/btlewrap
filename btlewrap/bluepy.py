@@ -40,8 +40,7 @@ class BluepyBackend(AbstractBackend):
 
     def __init__(self, adapter: str = 'hci0', address_type: str = 'public'):
         """Create new instance of the backend."""
-        super(BluepyBackend, self).__init__(adapter)
-        self.address_type = address_type
+        super(BluepyBackend, self).__init__(adapter, address_type)
         self._peripheral = None
 
     @wrap_exception
