@@ -1,7 +1,7 @@
 """Public interface for btlewrap."""
 import sys
 
-__version__ = '0.0.7'
+__version__ = '0.0.8-dev'
 
 # This check must be run first, so that it fails before loading the other modules.
 # Otherwise we do not get a clean error message.
