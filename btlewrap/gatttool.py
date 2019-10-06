@@ -32,8 +32,8 @@ class GatttoolBackend(AbstractBackend):
 
     # pylint: disable=subprocess-popen-preexec-fn
 
-    def __init__(self, adapter: str = 'hci0', retries: int = 3, timeout: float = 20, address_type: str = 'public'):
-        super(GatttoolBackend, self).__init__(adapter)
+    def __init__(self, adapter: str = 'hci0', *, retries: int = 3, timeout: float = 20, address_type: str = 'public'):
+        super(GatttoolBackend, self).__init__(adapter, address_type)
         self.adapter = adapter
         self.retries = retries
         self.timeout = timeout

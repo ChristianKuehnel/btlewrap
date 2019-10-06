@@ -9,8 +9,8 @@ class BluetoothInterface:
     This class takes care of locking and the context managers.
     """
 
-    def __init__(self, backend: "AbstractBackend", adapter: str = 'hci0', address_type: str = 'public', **kwargs):
-        self._backend = backend(adapter, address_type=address_type, **kwargs)
+    def __init__(self, backend: "AbstractBackend", *, adapter: str = 'hci0', address_type: str = 'public', **kwargs):
+        self._backend = backend(adapter=adapter, address_type=address_type)
         self._backend.check_backend()
 
     def __del__(self):
@@ -80,8 +80,9 @@ class AbstractBackend:
 
     _DATA_MODE_LISTEN = bytes([0x01, 0x00])
 
-    def __init__(self, adapter: str):
+    def __init__(self, adapter: str, address_type: str, **kwargs):
         self.adapter = adapter
+        self.address_type = address_type
 
     def connect(self, mac: str):
         """connect to a device with the given @mac.
