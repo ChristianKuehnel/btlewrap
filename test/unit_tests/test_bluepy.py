@@ -41,7 +41,7 @@ class TestBluepy(unittest.TestCase):
     @mock.patch('bluepy.btle.Peripheral')
     def test_connect_exception(self, mock_peripheral):
         """Test exception wrapping."""
-        mock_peripheral.side_effect = BluetoothBackendException('Test')
+        mock_peripheral.side_effect = BTLEException('Test')
         backend = BluepyBackend()
         with self.assertRaises(BluetoothBackendException):
             backend.connect(TEST_MAC)
