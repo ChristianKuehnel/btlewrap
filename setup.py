@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Python package description."""
 from setuptools import setup, find_packages
+from btlewrap import __version__ as version
 
 
 def readme():
@@ -11,7 +12,7 @@ def readme():
 
 setup(
     name='btlewrap',
-    version='0.0.6-dev',
+    version=version,
     description='wrapper around different bluetooth low energy backends',
     url='https://github.com/ChristianKuehnel/btlewrap',
     author='Christian Kuehnel',
