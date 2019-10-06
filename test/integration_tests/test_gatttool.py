@@ -1,4 +1,4 @@
-"""These btlewrap by connecting to a real device."""
+"""Test btlewrap by connecting to a real device."""
 
 import unittest
 import pytest
@@ -6,6 +6,7 @@ from btlewrap import GatttoolBackend
 
 
 class TestGatttool(unittest.TestCase):
+    """Test btlewrap by connecting to a real device."""
     # pylint does not understand pytest fixtures, so we have to disable the warning
     # pylint: disable=no-member
 
