@@ -10,7 +10,7 @@ class BluetoothInterface:
     """
 
     def __init__(self, backend: "AbstractBackend", *, adapter: str = 'hci0', address_type: str = 'public', **kwargs):
-        self._backend = backend(adapter=adapter, address_type=address_type)
+        self._backend = backend(adapter=adapter, address_type=address_type, **kwargs)
         self._backend.check_backend()
 
     def __del__(self):
@@ -83,6 +83,7 @@ class AbstractBackend:
     def __init__(self, adapter: str, address_type: str, **kwargs):
         self.adapter = adapter
         self.address_type = address_type
+        self.kwargs = kwargs
 
     def connect(self, mac: str):
         """connect to a device with the given @mac.
