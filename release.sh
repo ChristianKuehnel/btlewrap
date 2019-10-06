@@ -2,7 +2,7 @@
 # release current branch to pypi
 
 echo Releasing version:
-grep version setup.py
+grep __version__ btlewrap/__init__.py
 read -n1 -r -p "Press any key to continue..." key
 
 rm -r dist
