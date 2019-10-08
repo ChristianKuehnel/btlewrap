@@ -38,14 +38,16 @@ class _BackendConnection:  # pylint: disable=too-few-public-methods
     def __init__(self, backend: "AbstractBackend", mac: str):
         self._backend = backend  # type: AbstractBackend
         self._mac = mac  # type: str
+        self._has_lock = False
 
     def __enter__(self) -> "AbstractBackend":
         self._lock.acquire()
+        self._has_lock = True
         try:
             self._backend.connect(self._mac)
         # release lock on any exceptions otherwise it will never be unlocked
         except:  # noqa: E722
-            self._lock.release()
+            self._cleanup()
             raise
         return self._backend
 
@@ -56,9 +58,10 @@ class _BackendConnection:  # pylint: disable=too-few-public-methods
         self._cleanup()
 
     def _cleanup(self):
-        if _BackendConnection.is_connected():
+        if self._has_lock:
             self._backend.disconnect()
             self._lock.release()
+            self._has_lock = False
 
     @staticmethod
     def is_connected() -> bool:
