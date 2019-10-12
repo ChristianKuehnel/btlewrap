@@ -1,6 +1,6 @@
 """Public interface for btlewrap."""
 import sys
-from btlewrap.version import __version__
+from btlewrap.version import __version__  # noqa: F401
 
 # This check must be run first, so that it fails before loading the other modules.
 # Otherwise we do not get a clean error message.
