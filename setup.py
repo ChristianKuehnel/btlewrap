@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Python package description."""
 from setuptools import setup, find_packages
-from btlewrap import __version__ as version
+from btlewrap.version import __version__ as version
 
 
 def readme():

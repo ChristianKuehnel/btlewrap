@@ -1,7 +1,6 @@
 """Public interface for btlewrap."""
 import sys
-
-__version__ = '0.0.8-dev'
+from btlewrap.version import __version__
 
 # This check must be run first, so that it fails before loading the other modules.
 # Otherwise we do not get a clean error message.
@@ -11,6 +10,7 @@ if sys.version_info <= (3, 4):
                          sys.version_info.major,
                          sys.version_info.minor,
                          sys.executable))
+
 
 from btlewrap.base import BluetoothBackendException  # noqa: F401,E402 # pylint: disable=wrong-import-position
 
