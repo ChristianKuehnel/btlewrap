@@ -38,5 +38,4 @@ setup(
         'bluepy': ['bluepy==1.3.0'],
         'pygatt': ['pygatt==3.4.0'], 
         },
-    install_requires=['typing>=3,<4'],
 )
