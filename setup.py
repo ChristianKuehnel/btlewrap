@@ -36,6 +36,6 @@ setup(
     extras_require={
         'testing': ['pytest'], 
         'bluepy': ['bluepy==1.3.0'],
-        'pygatt': ['pygatt==3.4.0'], 
+        'pygatt': ['pygatt==3.2.0'], 
         },
 )
