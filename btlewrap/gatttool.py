@@ -264,7 +264,7 @@ class GatttoolBackend(AbstractBackend):
     def check_backend() -> bool:
         """Check if gatttool is available on the system."""
         try:
-            run(['gatttool','-h'], stdout=PIPE, stderr=PIPE, check=True)
+            run(['gatttool', '-h'], stdout=PIPE, stderr=PIPE, check=True)
             return True
         except OSError as os_err:
             msg = 'gatttool not found: {}'.format(str(os_err))
