@@ -188,12 +188,12 @@ class TestGatttool(unittest.TestCase):
         self.assertTrue(backend.wait_for_notification(0xFF, self, 10))
         self.assertTrue(self.handle_notification_called)
 
-    @mock.patch('btlewrap.gatttool.call', return_value=None)
+    @mock.patch('btlewrap.gatttool.run', return_value=None)
     def test_check_backend_ok(self, call_mock):
         """Test check_backend successfully."""
         self.assertTrue(GatttoolBackend().check_backend())
 
-    @mock.patch('btlewrap.gatttool.call', **{'side_effect': IOError()})
+    @mock.patch('btlewrap.gatttool.run', **{'side_effect': IOError()})
     def test_check_backend_fail(self, call_mock):
         """Test check_backend with IOError being risen."""
         self.assertFalse(GatttoolBackend().check_backend())
@@ -214,7 +214,7 @@ class TestGatttool(unittest.TestCase):
     def test_supports_scanning(self):
         """Check if scanning is set correctly."""
         backend = GatttoolBackend()
-        self.assertFalse(backend.supports_scanning())
+        self.assertTrue(backend.supports_scanning())
 
 
 def _configure_popenmock(popen_mock, output_string):

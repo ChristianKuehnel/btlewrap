@@ -9,8 +9,8 @@ import os
 import logging
 import re
 import time
-from typing import Callable
-from subprocess import Popen, PIPE, TimeoutExpired, signal, call
+from typing import Callable, List, Tuple
+from subprocess import Popen, PIPE, TimeoutExpired, signal, run
 from btlewrap.base import AbstractBackend, BluetoothBackendException
 
 _LOGGER = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ class GatttoolBackend(AbstractBackend):
 
     @staticmethod
     def supports_scanning() -> bool:
-        return False
+        return True
 
     def connect(self, mac: str):
         """Connect to sensor.
@@ -264,7 +264,7 @@ class GatttoolBackend(AbstractBackend):
     def check_backend() -> bool:
         """Check if gatttool is available on the system."""
         try:
-            call('gatttool', stdout=PIPE, stderr=PIPE)
+            run(['gatttool', '-h'], stdout=PIPE, stderr=PIPE, check=True)
             return True
         except OSError as os_err:
             msg = 'gatttool not found: {}'.format(str(os_err))
@@ -284,3 +284,34 @@ class GatttoolBackend(AbstractBackend):
             prefix_string = '0x'
         suffix = ''.join([format(c, "02x") for c in raw_data])
         return prefix_string + suffix.upper()
+
+    @staticmethod
+    def scan_for_devices(timeout: int = 10, adapter: str = None) -> List[Tuple[str, str]]:
+        # call hcitool with a timeout, otherwise it will scan forever
+        cmd = ['timeout', '-s', 'SIGINT', f'{timeout}s', 'hcitool']
+        if adapter is not None:
+            cmd += ['-i', adapter]
+        cmd += ['lescan']
+        # setting check=False as process is killed by timeout
+        proc = run(cmd, stdout=PIPE, stderr=None, timeout=2*timeout,
+                   text=True, check=False)
+        return GatttoolBackend._parse_scan_output(proc.stdout)
+
+    @staticmethod
+    def _parse_scan_output(scan_output: str) -> List[Tuple[str, str]]:
+        # skip first line containing "LE Scan ..."
+        devices = dict()
+        device_regex = re.compile(r'(?P<mac>([\dA-Fa-f]{2}:){5}[\dA-Fa-f]{2})\W+\((?P<name>[^\)]+)\)')
+        # gatttool constant if device name is unknown
+        name_unknown = 'unknown'
+        for line in scan_output.split('\n')[1:]:
+            match = device_regex.search(line)
+            if match is None or match.group('mac') is None:
+                continue
+            mac = match.group('mac')
+            name = match.group('name')
+
+            if mac not in devices or devices[mac] == name_unknown:
+                devices[mac] = name
+
+        return list(devices.items())
