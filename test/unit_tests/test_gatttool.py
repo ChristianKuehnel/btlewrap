@@ -17,7 +17,8 @@ class TestGatttool(unittest.TestCase):
     # pylint: disable = protected-access
 
     # arguments of mock.patch are not always used
-    # pylint: disable = unused-argument
+    # tests have more methos that usual
+    # pylint: disable = unused-argument, too-many-public-methods
 
     handle_notification_called = False
 
@@ -209,6 +210,11 @@ class TestGatttool(unittest.TestCase):
         self.assertTrue(len(data) == 3)
         self.assertTrue(data[0] == "54 3d 32 37 2e 33 20 48 3d 32 37 2e 30 00")
         self.assertTrue(data[2] == "54 3d 32 37 2e 31 20 48 3d 32 37 2e 34 00")
+
+    def test_supports_scanning(self):
+        """Check if scanning is set correctly."""
+        backend = GatttoolBackend()
+        self.assertFalse(backend.supports_scanning())
 
 
 def _configure_popenmock(popen_mock, output_string):

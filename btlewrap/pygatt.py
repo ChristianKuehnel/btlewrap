@@ -48,6 +48,10 @@ class PygattBackend(AbstractBackend):
         if self._adapter is not None:
             self._adapter.stop()
 
+    @staticmethod
+    def supports_scanning() -> bool:
+        return False
+
     @wrap_exception
     def connect(self, mac: str):
         """Connect to a device."""

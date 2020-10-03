@@ -40,6 +40,10 @@ class GatttoolBackend(AbstractBackend):
         self.address_type = address_type
         self._mac = None
 
+    @staticmethod
+    def supports_scanning() -> bool:
+        return False
+
     def connect(self, mac: str):
         """Connect to sensor.
 

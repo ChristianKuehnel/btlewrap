@@ -101,6 +101,7 @@ ENV/
 .mypy_cache/
 .idea
 .tox
+.tox_sudo
 .pytest_cache/
 *.swp
 .test_mac

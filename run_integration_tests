@@ -14,7 +14,10 @@ else
     SUITE=$1
 fi
 TOX=$(which tox)
-sudo ${TOX} -e integration_tests -- --mac=$MAC $SUITE
-# clean up the file system permissions after running the tests as root
-sudo chown -R $UID .cache .tox .pytest_cache *.egg-info
 
+# run tox with sudo to be able to scan for devices
+# run in separate folder so avoid later issues on file permissions
+sudo ${TOX} -e integration_tests --workdir=.tox_sudo -- --mac=$MAC $SUITE
+
+# reset permissions after running as root
+sudo chown -R $USER * .*

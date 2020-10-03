@@ -1,7 +1,7 @@
 """Test btlewrap by connecting to a real device."""
 
 import unittest
-from btlewrap import BluepyBackend
+from btlewrap import PygattBackend
 from . import CommonTests
 
 
@@ -12,4 +12,4 @@ class TestBluepy(unittest.TestCase, CommonTests):
 
     def setUp(self):
         """Set up the test environment."""
-        self.backend = BluepyBackend()
+        self.backend = PygattBackend()
