@@ -17,5 +17,5 @@ class TestGatttool(unittest.TestCase, CommonTests):
     def test_scan_with_adapter(self):
         """Scan for devices with specific adapter."""
 
-        devices = self.backend.scan_for_devices(timeout=7, adapter='/dev/hci0')
+        devices = self.backend.scan_for_devices(timeout=7, adapter='hci0')
         self.assertGreater(len(devices), 0)

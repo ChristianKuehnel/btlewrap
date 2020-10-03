@@ -264,7 +264,7 @@ class GatttoolBackend(AbstractBackend):
     def check_backend() -> bool:
         """Check if gatttool is available on the system."""
         try:
-            run('gatttool', stdout=PIPE, stderr=PIPE, check=True)
+            run(['gatttool','-h'], stdout=PIPE, stderr=PIPE, check=True)
             return True
         except OSError as os_err:
             msg = 'gatttool not found: {}'.format(str(os_err))
@@ -287,12 +287,14 @@ class GatttoolBackend(AbstractBackend):
 
     @staticmethod
     def scan_for_devices(timeout: int = 10, adapter: str = None) -> List[Tuple[str, str]]:
-        cmd = ['timeout', f'{timeout}s', 'hcitool']
+        # call hcitool with a timeout, otherwise it will scan forever
+        cmd = ['timeout', '-s', 'SIGINT', f'{timeout}s', 'hcitool']
         if adapter is not None:
             cmd += ['-i', adapter]
         cmd += ['lescan']
+        # setting check=False as process is killed by timeout
         proc = run(cmd, stdout=PIPE, stderr=None, timeout=2*timeout,
-                   text=True, check=True)
+                   text=True, check=False)
         return GatttoolBackend._parse_scan_output(proc.stdout)
 
     @staticmethod
