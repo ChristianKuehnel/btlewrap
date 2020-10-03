@@ -53,3 +53,8 @@ class TestBluepy(unittest.TestCase):
         backend.connect(TEST_MAC)
         self.assertTrue(backend.wait_for_notification(0xFF, None, 10))
         mock_peripheral.assert_called_with(TEST_MAC, addrType='public', iface=0)
+
+    def test_supports_scanning(self):
+        """Check if scanning is set correctly."""
+        backend = BluepyBackend()
+        self.assertTrue(backend.supports_scanning())

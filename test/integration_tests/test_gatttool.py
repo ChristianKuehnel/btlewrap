@@ -1,11 +1,11 @@
 """Test btlewrap by connecting to a real device."""
 
 import unittest
-import pytest
 from btlewrap import GatttoolBackend
+from . import CommonTests
 
 
-class TestGatttool(unittest.TestCase):
+class TestGatttool(unittest.TestCase, CommonTests):
     """Test btlewrap by connecting to a real device."""
     # pylint does not understand pytest fixtures, so we have to disable the warning
     # pylint: disable=no-member
@@ -13,9 +13,3 @@ class TestGatttool(unittest.TestCase):
     def setUp(self):
         """Set up the test environment."""
         self.backend = GatttoolBackend()
-
-    @pytest.mark.usefixtures("mac")
-    def test_connect(self):
-        """Try connecting to a device."""
-        self.backend.connect(self.mac)
-        self.backend.disconnect()

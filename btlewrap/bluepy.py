@@ -93,6 +93,10 @@ class BluepyBackend(AbstractBackend):
         return self._peripheral.waitForNotifications(notification_timeout)
 
     @staticmethod
+    def supports_scanning() -> bool:
+        return True
+
+    @staticmethod
     def check_backend() -> bool:
         """Check if the backend is available."""
         try:
