@@ -34,8 +34,8 @@ setup(
     keywords='bluetooth low-energy ble',
     zip_safe=False,
     extras_require={
-        'testing': ['pytest'], 
-        'bluepy': ['bluepy==1.3.0'],
-        'pygatt': ['pygatt==3.2.0'], 
+        'testing': ['pytest'],
+        'bluepy': ['bluepy'],
+        'pygatt': ['pygatt'],
         },
 )
