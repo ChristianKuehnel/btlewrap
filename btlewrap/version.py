@@ -1,3 +1,3 @@
 """Version number of the library."""
 
-__version__ = '0.0.11-dev'
+__version__ = '0.1.0'
