@@ -30,7 +30,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
-    packages=find_packages(),
+    packages=find_packages(exclude=('test', 'test.*')),
     keywords='bluetooth low-energy ble',
     zip_safe=False,
     extras_require={
