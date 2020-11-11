@@ -17,9 +17,10 @@ from btlewrap.base import BluetoothBackendException  # noqa: F401,E402 # pylint:
 from btlewrap.bluepy import BluepyBackend      # noqa: E402 # pylint: disable=wrong-import-position
 from btlewrap.gatttool import GatttoolBackend  # noqa: E402 # pylint: disable=wrong-import-position
 from btlewrap.pygatt import PygattBackend      # noqa: E402 # pylint: disable=wrong-import-position
+from btlewrap.socket import SocketBackend      # noqa: E402 # pylint: disable=wrong-import-position
 
 
-_ALL_BACKENDS = [BluepyBackend, GatttoolBackend, PygattBackend]
+_ALL_BACKENDS = [BluepyBackend, GatttoolBackend, PygattBackend, SocketBackend]
 
 
 def available_backends():
