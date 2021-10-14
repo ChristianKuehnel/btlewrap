@@ -2,12 +2,15 @@
 
 This backend uses the pygatt API: https://github.com/peplin/pygatt
 """
-from typing import Callable
+from typing import Callable, Optional
 from btlewrap.base import AbstractBackend, BluetoothBackendException
 
 
 def wrap_exception(func: Callable) -> Callable:
-    """Decorator to wrap pygatt exceptions into BluetoothBackendException."""
+    """Decorator to wrap pygatt exceptions into BluetoothBackendException.
+       pytype seems to have problems with this decorator around __init__, this
+       leads to false positives in analysis results.
+    """
     try:
         # only do the wrapping if pygatt is installed.
         # otherwise it's pointless anyway
@@ -31,22 +34,21 @@ class PygattBackend(AbstractBackend):
     """Bluetooth backend for Blue Giga based bluetooth devices."""
 
     @wrap_exception
-    def __init__(self, adapter: str = None, address_type: str = 'public'):
+    def __init__(self, adapter: Optional[str] = None, address_type: str = 'public'):
         """Create a new instance.
-
         Note: the parameter "adapter" is ignored, pygatt detects the right USB port automagically.
         """
         super(PygattBackend, self).__init__(adapter, address_type)
         self.check_backend()
 
         import pygatt
-        self._adapter = pygatt.BGAPIBackend()
+        self._adapter = pygatt.BGAPIBackend()  # type: pygatt.BGAPIBackend
         self._adapter.start()
         self._device = None
 
     def __del__(self):
-        if self._adapter is not None:
-            self._adapter.stop()
+        if self._adapter is not None:  # pytype: disable=attribute-error
+            self._adapter.stop()  # pytype: disable=attribute-error
 
     @staticmethod
     def supports_scanning() -> bool:
@@ -64,7 +66,7 @@ class PygattBackend(AbstractBackend):
 
     def is_connected(self) -> bool:
         """Check if connected to a device."""
-        return self._device is not None
+        return self._device is not None  # pytype: disable=attribute-error
 
     @wrap_exception
     def disconnect(self):

@@ -1,6 +1,6 @@
 """Bluetooth Backends available for miflora and other btle sensors."""
 from threading import Lock
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 
 class BluetoothInterface:
@@ -9,7 +9,7 @@ class BluetoothInterface:
     This class takes care of locking and the context managers.
     """
 
-    def __init__(self, backend: "AbstractBackend", *, adapter: str = 'hci0', address_type: str = 'public', **kwargs):
+    def __init__(self, backend: type, *, adapter: str = 'hci0', address_type: str = 'public', **kwargs):
         self._backend = backend(adapter=adapter, address_type=address_type, **kwargs)
         self._backend.check_backend()
 
@@ -129,7 +129,7 @@ class AbstractBackend:
         raise NotImplementedError
 
     @staticmethod
-    def scan_for_devices(timeout: int, adapter: str = None) -> List[Tuple[str, str]]:
+    def scan_for_devices(timeout: int, adapter: Optional[str] = None) -> List[Tuple[str, str]]:
         """Scan for additional devices.
 
         Returns a list of all the mac addresses of Xiaomi Mi Flower sensor that could be found.
