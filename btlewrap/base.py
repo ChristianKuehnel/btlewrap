@@ -9,7 +9,14 @@ class BluetoothInterface:
     This class takes care of locking and the context managers.
     """
 
-    def __init__(self, backend: type, *, adapter: str = 'hci0', address_type: str = 'public', **kwargs):
+    def __init__(
+        self,
+        backend: type,
+        *,
+        adapter: str = "hci0",
+        address_type: str = "public",
+        **kwargs
+    ):
         self._backend = backend(adapter=adapter, address_type=address_type, **kwargs)
         self._backend.check_backend()
 
@@ -105,11 +112,11 @@ class AbstractBackend:
         raise NotImplementedError
 
     def wait_for_notification(self, handle: int, delegate, notification_timeout: float):
-        """ registers as a listener and calls the delegate's handleNotification
-            for each notification received
-            @param handle - the handle to use to register for notifications
-            @param delegate - the delegate object's handleNotification is called for every notification received
-            @param notification_timeout - wait this amount of seconds for notifications
+        """registers as a listener and calls the delegate's handleNotification
+        for each notification received
+        @param handle - the handle to use to register for notifications
+        @param delegate - the delegate object's handleNotification is called for every notification received
+        @param notification_timeout - wait this amount of seconds for notifications
 
         """
         raise NotImplementedError
@@ -129,7 +136,9 @@ class AbstractBackend:
         raise NotImplementedError
 
     @staticmethod
-    def scan_for_devices(timeout: int, adapter: Optional[str] = None) -> List[Tuple[str, str]]:
+    def scan_for_devices(
+        timeout: int, adapter: Optional[str] = None
+    ) -> List[Tuple[str, str]]:
         """Scan for additional devices.
 
         Returns a list of all the mac addresses of Xiaomi Mi Flower sensor that could be found.

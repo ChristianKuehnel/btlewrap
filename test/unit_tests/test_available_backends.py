@@ -7,7 +7,7 @@ from btlewrap import available_backends, BluepyBackend, GatttoolBackend, PygattB
 class TestAvailableBackends(unittest.TestCase):
     """Tests for miflora.available_backends."""
 
-    @mock.patch('btlewrap.gatttool.run', return_value=None)
+    @mock.patch("btlewrap.gatttool.run", return_value=None)
     def test_all(self, _):
         """Tests with all backends available.
 
@@ -19,7 +19,7 @@ class TestAvailableBackends(unittest.TestCase):
         self.assertIn(GatttoolBackend, backends)
         self.assertIn(PygattBackend, backends)
 
-    @mock.patch('btlewrap.gatttool.run', **{'side_effect': IOError()})
+    @mock.patch("btlewrap.gatttool.run", **{"side_effect": IOError()})
     def test_one_missing(self, _):
         """Tests with all backends available.
 

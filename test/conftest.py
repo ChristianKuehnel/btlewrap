@@ -10,7 +10,9 @@ def pytest_addoption(parser):
         - Add command line parameter '--mac=<some mac>' to pytest.
         - enable logging to console
     """
-    parser.addoption("--mac", action="store", help="mac address of sensor to be used for testing")
+    parser.addoption(
+        "--mac", action="store", help="mac address of sensor to be used for testing"
+    )
     logging.basicConfig(level=logging.DEBUG)
 
 

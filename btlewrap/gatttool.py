@@ -24,15 +24,23 @@ def wrap_exception(func: Callable) -> Callable:
             return func(*args, **kwargs)
         except IOError as exception:
             raise BluetoothBackendException() from exception
+
     return _func_wrapper
 
 
 class GatttoolBackend(AbstractBackend):
-    """ Backend using gatttool."""
+    """Backend using gatttool."""
 
     # pylint: disable=subprocess-popen-preexec-fn
 
-    def __init__(self, adapter: str = 'hci0', *, retries: int = 3, timeout: float = 20, address_type: str = 'public'):
+    def __init__(
+        self,
+        adapter: str = "hci0",
+        *,
+        retries: int = 3,
+        timeout: float = 20,
+        address_type: str = "public",
+    ):
         super(GatttoolBackend, self).__init__(adapter, address_type)
         self.adapter = adapter
         self.retries = retries
@@ -75,7 +83,7 @@ class GatttoolBackend(AbstractBackend):
         """
 
         if not self.is_connected():
-            raise BluetoothBackendException('Not connected to any device.')
+            raise BluetoothBackendException("Not connected to any device.")
 
         attempt = 0
         delay = 10
@@ -83,15 +91,19 @@ class GatttoolBackend(AbstractBackend):
 
         while attempt <= self.retries:
             cmd = "gatttool --device={} --addr-type={} --char-write-req -a {} -n {} --adapter={}".format(
-                self._mac, self.address_type, self.byte_to_handle(handle), self.bytes_to_string(value), self.adapter)
-            _LOGGER.debug("Running gatttool with a timeout of %d: %s",
-                          self.timeout, cmd)
+                self._mac,
+                self.address_type,
+                self.byte_to_handle(handle),
+                self.bytes_to_string(value),
+                self.adapter,
+            )
+            _LOGGER.debug(
+                "Running gatttool with a timeout of %d: %s", self.timeout, cmd
+            )
 
-            with Popen(cmd,
-                       shell=True,
-                       stdout=PIPE,
-                       stderr=PIPE,
-                       preexec_fn=os.setsid) as process:
+            with Popen(
+                cmd, shell=True, stdout=PIPE, stderr=PIPE, preexec_fn=os.setsid
+            ) as process:
                 try:
                     result = process.communicate(timeout=self.timeout)[0]
                     _LOGGER.debug("Finished gatttool")
@@ -101,14 +113,15 @@ class GatttoolBackend(AbstractBackend):
                     result = process.communicate()[0]
                     _LOGGER.debug("Killed hanging gatttool")
 
-            result = result.decode("utf-8").strip(' \n\t')
+            result = result.decode("utf-8").strip(" \n\t")
             if "Write Request failed" in result:
-                raise BluetoothBackendException('Error writing handle to sensor: {}'.format(result))
+                raise BluetoothBackendException(
+                    "Error writing handle to sensor: {}".format(result)
+                )
             _LOGGER.debug("Got %s from gatttool", result)
             # Parse the output
             if "successfully" in result:
-                _LOGGER.debug(
-                    "Exit write_ble with result (%s)", current_thread())
+                _LOGGER.debug("Exit write_ble with result (%s)", current_thread())
                 return True
 
             attempt += 1
@@ -117,7 +130,9 @@ class GatttoolBackend(AbstractBackend):
                 time.sleep(delay)
                 delay *= 2
 
-        raise BluetoothBackendException("Exit write_ble, no data ({})".format(current_thread()))
+        raise BluetoothBackendException(
+            "Exit write_ble, no data ({})".format(current_thread())
+        )
 
     @wrap_exception
     def wait_for_notification(self, handle: int, delegate, notification_timeout: float):
@@ -133,7 +148,7 @@ class GatttoolBackend(AbstractBackend):
         """
 
         if not self.is_connected():
-            raise BluetoothBackendException('Not connected to any device.')
+            raise BluetoothBackendException("Not connected to any device.")
 
         attempt = 0
         delay = 10
@@ -141,15 +156,19 @@ class GatttoolBackend(AbstractBackend):
 
         while attempt <= self.retries:
             cmd = "gatttool --device={} --addr-type={} --char-write-req -a {} -n {} --adapter={} --listen".format(
-                self._mac, self.address_type, self.byte_to_handle(handle), self.bytes_to_string(self._DATA_MODE_LISTEN),
-                self.adapter)
-            _LOGGER.debug("Running gatttool with a timeout of %d: %s", notification_timeout, cmd)
+                self._mac,
+                self.address_type,
+                self.byte_to_handle(handle),
+                self.bytes_to_string(self._DATA_MODE_LISTEN),
+                self.adapter,
+            )
+            _LOGGER.debug(
+                "Running gatttool with a timeout of %d: %s", notification_timeout, cmd
+            )
 
-            with Popen(cmd,
-                       shell=True,
-                       stdout=PIPE,
-                       stderr=PIPE,
-                       preexec_fn=os.setsid) as process:
+            with Popen(
+                cmd, shell=True, stdout=PIPE, stderr=PIPE, preexec_fn=os.setsid
+            ) as process:
                 try:
                     result = process.communicate(timeout=notification_timeout)[0]
                     _LOGGER.debug("Finished gatttool")
@@ -159,16 +178,20 @@ class GatttoolBackend(AbstractBackend):
                     result = process.communicate()[0]
                     _LOGGER.debug("Listening stopped forcefully after timeout.")
 
-            result = result.decode("utf-8").strip(' \n\t')
+            result = result.decode("utf-8").strip(" \n\t")
             if "Write Request failed" in result:
-                raise BluetoothBackendException('Error writing handle to sensor: {}'.format(result))
+                raise BluetoothBackendException(
+                    "Error writing handle to sensor: {}".format(result)
+                )
             _LOGGER.debug("Got %s from gatttool", result)
             # Parse the output to determine success
             if "successfully" in result:
                 _LOGGER.debug("Exit write_ble with result (%s)", current_thread())
                 # extract useful data.
                 for element in self.extract_notification_payload(result):
-                    delegate.handleNotification(handle, bytes([int(x, 16) for x in element.split()]))
+                    delegate.handleNotification(
+                        handle, bytes([int(x, 16) for x in element.split()])
+                    )
                 return True
 
             attempt += 1
@@ -177,7 +200,9 @@ class GatttoolBackend(AbstractBackend):
                 time.sleep(delay)
                 delay *= 2
 
-        raise BluetoothBackendException("Exit write_ble, no data ({})".format(current_thread()))
+        raise BluetoothBackendException(
+            "Exit write_ble, no data ({})".format(current_thread())
+        )
 
     @staticmethod
     def extract_notification_payload(process_output):
@@ -215,7 +240,7 @@ class GatttoolBackend(AbstractBackend):
         """
 
         if not self.is_connected():
-            raise BluetoothBackendException('Not connected to any device.')
+            raise BluetoothBackendException("Not connected to any device.")
 
         attempt = 0
         delay = 10
@@ -223,14 +248,14 @@ class GatttoolBackend(AbstractBackend):
 
         while attempt <= self.retries:
             cmd = "gatttool --device={} --addr-type={} --char-read -a {} --adapter={}".format(
-                self._mac, self.address_type, self.byte_to_handle(handle), self.adapter)
-            _LOGGER.debug("Running gatttool with a timeout of %d: %s",
-                          self.timeout, cmd)
-            with Popen(cmd,
-                       shell=True,
-                       stdout=PIPE,
-                       stderr=PIPE,
-                       preexec_fn=os.setsid) as process:
+                self._mac, self.address_type, self.byte_to_handle(handle), self.adapter
+            )
+            _LOGGER.debug(
+                "Running gatttool with a timeout of %d: %s", self.timeout, cmd
+            )
+            with Popen(
+                cmd, shell=True, stdout=PIPE, stderr=PIPE, preexec_fn=os.setsid
+            ) as process:
                 try:
                     result = process.communicate(timeout=self.timeout)[0]
                     _LOGGER.debug("Finished gatttool")
@@ -240,16 +265,17 @@ class GatttoolBackend(AbstractBackend):
                     result = process.communicate()[0]
                     _LOGGER.debug("Killed hanging gatttool")
 
-            result = result.decode("utf-8").strip(' \n\t')
-            _LOGGER.debug("Got \"%s\" from gatttool", result)
+            result = result.decode("utf-8").strip(" \n\t")
+            _LOGGER.debug('Got "%s" from gatttool', result)
             # Parse the output
             if "read failed" in result:
-                raise BluetoothBackendException("Read error from gatttool: {}".format(result))
+                raise BluetoothBackendException(
+                    "Read error from gatttool: {}".format(result)
+                )
 
             res = re.search("( [0-9a-fA-F][0-9a-fA-F])+", result)
             if res:
-                _LOGGER.debug(
-                    "Exit read_ble with result (%s)", current_thread())
+                _LOGGER.debug("Exit read_ble with result (%s)", current_thread())
                 return bytes([int(x, 16) for x in res.group(0).split()])
 
             attempt += 1
@@ -258,58 +284,65 @@ class GatttoolBackend(AbstractBackend):
                 time.sleep(delay)
                 delay *= 2
 
-        raise BluetoothBackendException("Exit read_ble, no data ({})".format(current_thread()))
+        raise BluetoothBackendException(
+            "Exit read_ble, no data ({})".format(current_thread())
+        )
 
     @staticmethod
     def check_backend() -> bool:
         """Check if gatttool is available on the system."""
         try:
-            run(['gatttool', '-h'], stdout=PIPE, stderr=PIPE, check=True)
+            run(["gatttool", "-h"], stdout=PIPE, stderr=PIPE, check=True)
             return True
         except OSError as os_err:
-            msg = 'gatttool not found: {}'.format(str(os_err))
+            msg = "gatttool not found: {}".format(str(os_err))
             _LOGGER.error(msg)
         return False
 
     @staticmethod
     def byte_to_handle(in_byte: int) -> str:
         """Convert a byte array to a handle string."""
-        return '0x'+'{:02x}'.format(in_byte).upper()
+        return "0x" + "{:02x}".format(in_byte).upper()
 
     @staticmethod
     def bytes_to_string(raw_data: bytes, prefix: bool = False) -> str:
         """Convert a byte array to a hex string."""
-        prefix_string = ''
+        prefix_string = ""
         if prefix:
-            prefix_string = '0x'
-        suffix = ''.join([format(c, "02x") for c in raw_data])
+            prefix_string = "0x"
+        suffix = "".join([format(c, "02x") for c in raw_data])
         return prefix_string + suffix.upper()
 
     @staticmethod
-    def scan_for_devices(timeout: int = 10, adapter: str = None) -> List[Tuple[str, str]]:
+    def scan_for_devices(
+        timeout: int = 10, adapter: str = None
+    ) -> List[Tuple[str, str]]:
         # call hcitool with a timeout, otherwise it will scan forever
-        cmd = ['timeout', '-s', 'SIGINT', f'{timeout}s', 'hcitool']
+        cmd = ["timeout", "-s", "SIGINT", f"{timeout}s", "hcitool"]
         if adapter is not None:
-            cmd += ['-i', adapter]
-        cmd += ['lescan']
+            cmd += ["-i", adapter]
+        cmd += ["lescan"]
         # setting check=False as process is killed by timeout
-        proc = run(cmd, stdout=PIPE, stderr=None, timeout=2*timeout,
-                   text=True, check=False)
+        proc = run(
+            cmd, stdout=PIPE, stderr=None, timeout=2 * timeout, text=True, check=False
+        )
         return GatttoolBackend._parse_scan_output(proc.stdout)
 
     @staticmethod
     def _parse_scan_output(scan_output: str) -> List[Tuple[str, str]]:
         # skip first line containing "LE Scan ..."
         devices = dict()
-        device_regex = re.compile(r'(?P<mac>([\dA-Fa-f]{2}:){5}[\dA-Fa-f]{2})\W+\((?P<name>[^\)]+)\)')
+        device_regex = re.compile(
+            r"(?P<mac>([\dA-Fa-f]{2}:){5}[\dA-Fa-f]{2})\W+\((?P<name>[^\)]+)\)"
+        )
         # gatttool constant if device name is unknown
-        name_unknown = 'unknown'
-        for line in scan_output.split('\n')[1:]:
+        name_unknown = "unknown"
+        for line in scan_output.split("\n")[1:]:
             match = device_regex.search(line)
-            if match is None or match.group('mac') is None:
+            if match is None or match.group("mac") is None:
                 continue
-            mac = match.group('mac')
-            name = match.group('name')
+            mac = match.group("mac")
+            name = match.group("name")
 
             if mac not in devices or devices[mac] == name_unknown:
                 devices[mac] = name
