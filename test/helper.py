@@ -11,7 +11,7 @@ class MockBackend(AbstractBackend):
     makes sensor to also test against a real sensor.
     """
 
-    def __init__(self, adapter='hci0', address_type=None):
+    def __init__(self, adapter="hci0", address_type=None):
         super(MockBackend, self).__init__(adapter, address_type)
         self.written_handles = []
         self.expected_write_handles = set()
@@ -27,7 +27,7 @@ class MockBackend(AbstractBackend):
         """Read one of the handles that are implemented."""
         if handle in self.override_read_handles:
             return self.override_read_handles[handle]
-        raise ValueError('handle not implemented in mockup')
+        raise ValueError("handle not implemented in mockup")
 
     def write_handle(self, handle, value):
         """Writing handles just stores the results in a list."""
@@ -36,5 +36,12 @@ class MockBackend(AbstractBackend):
 
     def wait_for_notification(self, handle, delegate, notification_timeout):
         """same as write_handle. Delegate is not used, yet."""
-        delegate.handleNotification(bytes([int(x, 16) for x in "54 3d 32 37 2e 33 20 48 3d 32 37 2e 30 00".split()]))
+        delegate.handleNotification(
+            bytes(
+                [
+                    int(x, 16)
+                    for x in "54 3d 32 37 2e 33 20 48 3d 32 37 2e 30 00".split()
+                ]
+            )
+        )
         return self.write_handle(handle, self._DATA_MODE_LISTEN)

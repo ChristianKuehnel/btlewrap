@@ -1,5 +1,6 @@
 [MESSAGES CONTROL]
-disable = abstract-method, too-many-instance-attributes, too-many-arguments, bad-whitespace, import-outside-toplevel
+disable = abstract-method, too-many-instance-attributes, too-many-arguments, 
+    bad-whitespace, import-outside-toplevel, bad-continuation
 
 [FORMAT]
 max-line-length=120

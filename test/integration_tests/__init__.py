@@ -3,8 +3,9 @@ import pytest
 from btlewrap import BluepyBackend
 
 
-class CommonTests():
+class CommonTests:
     """Base class for integration tests"""
+
     # pylint does not understand pytest fixtures, so we have to disable the warning
     # pylint: disable=no-member
 

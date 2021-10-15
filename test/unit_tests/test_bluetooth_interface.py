@@ -12,7 +12,7 @@ class TestBluetoothInterface(unittest.TestCase):
         bluetooth_if = BluetoothInterface(MockBackend)
         self.assertFalse(bluetooth_if.is_connected())
 
-        with bluetooth_if.connect('abc'):  # as connection:
+        with bluetooth_if.connect("abc"):  # as connection:
             self.assertTrue(bluetooth_if.is_connected())
 
         self.assertFalse(bluetooth_if.is_connected())
@@ -22,6 +22,6 @@ class TestBluetoothInterface(unittest.TestCase):
         bluetooth_if = BluetoothInterface(MockBackend)
         self.assertFalse(bluetooth_if.is_connected())
         with self.assertRaises(ValueError):
-            with bluetooth_if.connect('abc'):
-                raise ValueError('some test exception')
+            with bluetooth_if.connect("abc"):
+                raise ValueError("some test exception")
         self.assertFalse(bluetooth_if.is_connected())
