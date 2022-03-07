@@ -11,8 +11,8 @@ import re
 import time
 from typing import Callable, List, Tuple, Optional
 from subprocess import Popen, PIPE, TimeoutExpired, run
-from btlewrap.base import AbstractBackend, BluetoothBackendException
 import signal
+from btlewrap.base import AbstractBackend, BluetoothBackendException
 
 _LOGGER = logging.getLogger(__name__)
 
