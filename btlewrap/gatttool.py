@@ -9,8 +9,9 @@ import os
 import logging
 import re
 import time
-from typing import Callable, List, Tuple
-from subprocess import Popen, PIPE, TimeoutExpired, signal, run
+from typing import Callable, List, Tuple, Optional
+from subprocess import Popen, PIPE, TimeoutExpired, run
+import signal
 from btlewrap.base import AbstractBackend, BluetoothBackendException
 
 _LOGGER = logging.getLogger(__name__)
@@ -315,7 +316,7 @@ class GatttoolBackend(AbstractBackend):
 
     @staticmethod
     def scan_for_devices(
-        timeout: int = 10, adapter: str = None
+        timeout: int = 10, adapter: Optional[str] = None
     ) -> List[Tuple[str, str]]:
         # call hcitool with a timeout, otherwise it will scan forever
         cmd = ["timeout", "-s", "SIGINT", f"{timeout}s", "hcitool"]
